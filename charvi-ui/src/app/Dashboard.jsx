@@ -24,7 +24,11 @@ import Deleteall from './utils/Deleteall';
 import { Toaster } from 'react-hot-toast';
 import Toast from './utils/Toast';
 import { v4 as uuid } from 'uuid';
-import Profile from './components/Profile';
+import Profile from './components/sidepanel/Profile';
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { Sidebar, SidebarContent,SidebarFooter,SidebarHeader} from "@/components/ui/sidebar"
+import Logoutaccount from './components/sidepanel/Logoutaccount';
+import Content from './components/sidepanel/Content';
 
 
 export default function Dashboard() {
@@ -141,103 +145,120 @@ export default function Dashboard() {
     })
 
     return (
-        <ReactFlowProvider>
-        <div className="h-screen w-screen bg-[#212121] bg-[url('/images/dashboard-bg.png')]">
-           <div className='bg-white rounded-[12px] p-[5px] cursor-pointer flex flex-row items-center gap-x-[10px] absolute right-5 top-5 z-50'>
-                <div className=''>
-                    <Live/>
-                </div>
-                <div className=''>
-                    <Deleteall/>
-                </div>
-           </div>
-           <div className='absolute top-5 z-50 left-5'>
-                <Profile/>
-           </div>
-            <ReactFlow
-                onNodesChange={onNodesChange}
-                edges={edges}
-                onEdgesChange={onEdgesChange}
-                onConnect={onConnect}
-                onSelectionChange={({ nodes: selectedNodes }) => {
-                    if (selectedNodes.length === 0) {
-                        isSelected=false
-                        selectedNodeId='';
-                    } else {
-                        isSelected=true;
-                        selectedNodeId=selectedNodes[0].id
-                    }
-                }}
-                nodes={nodes}
-                nodeTypes={nodeTypes}
-                nodesDraggable={!live}
-                nodesConnectable={!live}
-                elementsSelectable={!live}
-                minZoom={0.7}
-                connectionMode="loose"
-            >
-                <Background color='#212121' />
-                
+        <SidebarProvider>
+            <Sidebar>
+                <SidebarHeader className={``}>
+                    <div className='cursor-pointer flex items-start hover:bg-[rgb(255,255,255,0.1)] rounded-lg h-full w-full p-[5px]'>
+                        <Profile/>
+                    </div>
+                </SidebarHeader>
+                <SidebarContent>
+                    <div className=''>
+                        <Content/>
+                    </div>
+                </SidebarContent>
+                <SidebarFooter>
+                    <div className='cursor-pointer flex items-start hover:bg-[rgb(255,255,255,0.1)] rounded-lg h-full w-full p-[5px]'>
+                        <Logoutaccount/>
+                    </div>
+                </SidebarFooter>
+            </Sidebar>
+            <SidebarTrigger/>
+            <ReactFlowProvider>
+                <div className="h-screen w-screen bg-[#212121] bg-[url('/images/dashboard-bg.png')]">
+                    <div className='bg-white rounded-[12px] p-[5px] cursor-pointer flex flex-row items-center gap-x-[10px] absolute right-5 top-5 z-50'>
+                            <div className=''>
+                                <Live/>
+                            </div>
+                            <div className=''>
+                                <Deleteall/>
+                            </div>
+                    </div>
+                    <ReactFlow
+                        onNodesChange={onNodesChange}
+                        edges={edges}
+                        onEdgesChange={onEdgesChange}
+                        onConnect={onConnect}
+                        onSelectionChange={({ nodes: selectedNodes }) => {
+                            if (selectedNodes.length === 0) {
+                                isSelected=false
+                                selectedNodeId='';
+                            } else {
+                                isSelected=true;
+                                selectedNodeId=selectedNodes[0].id
+                            }
+                        }}
+                        nodes={nodes}
+                        nodeTypes={nodeTypes}
+                        nodesDraggable={!live}
+                        nodesConnectable={!live}
+                        elementsSelectable={!live}
+                        minZoom={0.7}
+                        connectionMode="loose"
+                    >
+                        <Background color='#212121' />
+                        
 
-                <div className='flex absolute bottom-0 w-full justify-center'>
-                    <div className={`${live==false && 'z-50' } py-[25px]`}>
-                        <div className={`${live==false && 'z-50'}`}>
-                            <div className='p-[3px] border border-[#3C3D37] gap-x-[10px] grid grid-cols-5 bg-[#303030] general-multiple-buttons rounded-4xl'>
-                                {live &&
-                                <div className='flex items-center justify-center z-55 absolute h-[35px] w-[270px] live-multiple-buttons rounded-4xl'>
-                                  
-                                </div>}
-                                <button onClick={addNode} className={`${live && 'blur-[1px]'} p-[4px] flex items-center justify-center general-single-button rounded-l-4xl active:bg-[#242424]`}>
-                                    <div className='px-[5px]'>
-                                        <div className='m-[2px]'>
-                                            <div className='text-white'><Message /></div>
-                                        </div>
+                        <div className='flex absolute bottom-0 w-full justify-center'>
+                            <div className={`${live==false && 'z-50' } py-[25px]`}>
+                                <div className={`${live==false && 'z-50'}`}>
+                                    <div className='p-[3px] border border-[#3C3D37] gap-x-[10px] grid grid-cols-5 bg-[#303030] general-multiple-buttons rounded-4xl'>
+                                        {live &&
+                                        <div className='flex items-center justify-center z-55 absolute h-[35px] w-[270px] live-multiple-buttons rounded-4xl'>
+                                        
+                                        </div>}
+                                        <button onClick={addNode} className={`${live && 'blur-[1px]'} p-[4px] flex items-center justify-center general-single-button rounded-l-4xl active:bg-[#242424]`}>
+                                            <div className='px-[5px]'>
+                                                <div className='m-[2px]'>
+                                                    <div className='text-white'><Message /></div>
+                                                </div>
+                                            </div>
+                                        </button>
+                                        <button onClick={() => addMediaorbuttons({ tittle: 'media' })} className={`${live && 'blur-[1px]'} flex items-center justify-center general-single-button rounded`}>
+                                            <div className='px-[5px]'>
+                                                <div className='m-[2px]'>
+                                                    <div className='text-white'><Attachment /></div>
+                                                </div>
+                                            </div>
+                                        </button>
+                                        <button onClick={() => addMediaorbuttons({ tittle: 'action' })} className={`${live && 'blur-[1px]'} flex items-center justify-center general-single-button rounded`}>
+                                            <div className='px-[5px]'>
+                                                <div className='m-[2px]'>
+                                                    <div className='text-white'><Action /></div>
+                                                </div>
+                                            </div>
+                                        </button>
+                                        <button onClick={() => addMediaorbuttons({ tittle: 'list' })} className={`${live && 'blur-[1px]'} flex items-center justify-center general-single-button rounded`}>
+                                            <div className='px-[5px]'>
+                                                <div className='m-[2px]'>
+                                                    <div className='text-white'><List /></div>
+                                                </div>
+                                            </div>
+                                        </button>
+                                        <button onClick={() => addMediaorbuttons({ tittle: 'url' })} className={`${live && 'blur-[1px]'} flex items-center justify-center general-single-button rounded-r-4xl`}>
+                                            <div className='px-[5px]'>
+                                                <div className='m-[2px]'>
+                                                    <div className='text-white'><Url /></div>
+                                                </div>
+                                            </div>
+                                        </button>
                                     </div>
-                                </button>
-                                <button onClick={() => addMediaorbuttons({ tittle: 'media' })} className={`${live && 'blur-[1px]'} flex items-center justify-center general-single-button rounded`}>
-                                    <div className='px-[5px]'>
-                                        <div className='m-[2px]'>
-                                            <div className='text-white'><Attachment /></div>
-                                        </div>
-                                    </div>
-                                </button>
-                                <button onClick={() => addMediaorbuttons({ tittle: 'action' })} className={`${live && 'blur-[1px]'} flex items-center justify-center general-single-button rounded`}>
-                                    <div className='px-[5px]'>
-                                        <div className='m-[2px]'>
-                                            <div className='text-white'><Action /></div>
-                                        </div>
-                                    </div>
-                                </button>
-                                <button onClick={() => addMediaorbuttons({ tittle: 'list' })} className={`${live && 'blur-[1px]'} flex items-center justify-center general-single-button rounded`}>
-                                    <div className='px-[5px]'>
-                                        <div className='m-[2px]'>
-                                            <div className='text-white'><List /></div>
-                                        </div>
-                                    </div>
-                                </button>
-                                <button onClick={() => addMediaorbuttons({ tittle: 'url' })} className={`${live && 'blur-[1px]'} flex items-center justify-center general-single-button rounded-r-4xl`}>
-                                    <div className='px-[5px]'>
-                                        <div className='m-[2px]'>
-                                            <div className='text-white'><Url /></div>
-                                        </div>
-                                    </div>
-                                </button>
+                                </div>
                             </div>
                         </div>
+                    </ReactFlow>
+                    <div>
+                        {/* This create portal */}
+                        <Toaster 
+                            position="bottom-right"
+                            toastOptions={{
+                                style:{
+                                    // width:"300px"
+                                }
+                            }}/>
                     </div>
                 </div>
-            </ReactFlow>
-            <div>
-                {/* This create portal */}
-                <Toaster 
-                    position="bottom-right"
-                    toastOptions={{
-                        style:{
-                            // width:"300px"
-                        }
-                    }}/>
-            </div>
-        </div>
-        </ReactFlowProvider>
+            </ReactFlowProvider>
+        </SidebarProvider>
     );
 }
