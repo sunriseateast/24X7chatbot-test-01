@@ -1,0 +1,12 @@
+.no-focus-border:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  max-height: 300px !important;
+}
+
+
+/* node actual background bg-[#303030] */
+.node{
+  background-color: rgb(48, 48, 48,0.7);
+}
