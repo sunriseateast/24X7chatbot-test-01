@@ -11,7 +11,7 @@ import {
 
 import '@xyflow/react/dist/style.css';
 import Newnode from './Newnode';
-import { useCallback,useMemo} from 'react';
+import { useCallback,useMemo, useState} from 'react';
 import Message from './svg/Message';
 import Attachment from './svg/Attachment';
 import List from './svg/List';
@@ -37,7 +37,6 @@ export default function Dashboard() {
     const live=useStore((state)=>state.live)
     const nodeTypes = useMemo(() => ({ newnode: Newnode }), []);
     const getNodeObj=useStore((state)=>state.getNodeObj)
-
     console.log(getNodeObj())
     
     // Array of initial Nodes
@@ -146,7 +145,7 @@ export default function Dashboard() {
 
     return (
         <SidebarProvider>
-            <Sidebar>
+            <Sidebar className={`transform-gpu`} collapsible='icon'>
                 <SidebarHeader className={``}>
                     <div className='cursor-pointer flex items-start hover:bg-[rgb(255,255,255,0.1)] rounded-lg h-full w-full p-[5px]'>
                         <Profile/>
@@ -154,18 +153,18 @@ export default function Dashboard() {
                 </SidebarHeader>
                 <SidebarContent>
                     <div className=''>
-                        <Content/>
+                        <Content isOpen={''}/>
                     </div>
                 </SidebarContent>
                 <SidebarFooter>
-                    <div className='cursor-pointer flex items-start hover:bg-[rgb(255,255,255,0.1)] rounded-lg h-full w-full p-[5px]'>
+                    <div className='flex items-center justify-center'>
                         <Logoutaccount/>
                     </div>
                 </SidebarFooter>
             </Sidebar>
-            <SidebarTrigger/>
             <ReactFlowProvider>
                 <div className="h-screen w-screen bg-[#212121] bg-[url('/images/dashboard-bg.png')]">
+                    <SidebarTrigger className={`transition-all duration-300 transform-gpu absolute z-50 text-slate-50 m-[10px]`}/>
                     <div className='bg-white rounded-[12px] p-[5px] cursor-pointer flex flex-row items-center gap-x-[10px] absolute right-5 top-5 z-50'>
                             <div className=''>
                                 <Live/>
