@@ -1,50 +1,50 @@
-.live-button{
-    box-shadow: -0.6px -0.6px 50px 10px #84cc16
+.live-button {
+  box-shadow: -0.6px -0.6px 50px 10px #84cc16;
 }
-.live-button-box{
-    box-shadow: inset -0.6px -0.6px 10px 1px rgb(187, 187, 187,0.1);
-    background-color: #F8FAFC
-}
-
-.live-og-circle{
-    box-shadow:-0.6px -0.6px 5px 1px rgb(0, 0, 0,0.0)
+.live-button-box {
+  box-shadow: inset -0.6px -0.6px 10px 1px rgb(187, 187, 187, 0.1);
+  background-color: #f8fafc;
 }
 
-.live-multiple-buttons{
-    background-color: rgb(219, 228, 201,0.0);
+.live-og-circle {
+  box-shadow: -0.6px -0.6px 5px 1px rgb(0, 0, 0, 0);
 }
 
-.general-multiple-buttons{
-    background-color: rgb(48, 48, 48,0.7);
+.live-multiple-buttons {
+  background-color: rgb(219, 228, 201, 0);
 }
 
-.general-single-button{
-    background-color: none;
-    transition: background-color 0.1s ease-out
+.general-multiple-buttons {
+  background-color: rgb(48, 48, 48, 0.7);
+}
+
+.general-single-button {
+  background-color: none;
+  transition: background-color 0.1s ease-out;
 }
 
 .general-single-button:hover {
-  background-color: rgb(69, 68, 68)
+  background-color: rgb(69, 68, 68);
 }
 
-.general-single-button:active{
-    background-color:#242424
+.general-single-button:active {
+  background-color: #242424;
 }
 
-.live-menu{
-     box-shadow: inset -0.6px -1px 2px 1px rgb(187, 187, 187,0.1);
+.live-menu {
+  box-shadow: inset -0.6px -1px 2px 1px rgb(187, 187, 187, 0.1);
 }
 
-.business-login{
-    box-shadow: inset 2px -2px 5px -2px rgb(122, 122, 115,0.9);
+.business-login {
+  box-shadow: inset 2px -2px 5px -2px rgb(122, 122, 115, 0.9);
 }
 
-.expiry-button{
-    background-color: rgb(8, 203, 0,0.2);
-    border: 1px solid rgb(8, 203, 0,0.5);
+.expiry-button {
+  background-color: rgb(8, 203, 0, 0.2);
+  border: 1px solid rgb(8, 203, 0, 0.5);
 }
 
-.expired-button{
-    background-color: rgb(220, 20, 60,0.2);
-    border: 1px solid rgb(237, 53, 0,0.9);
+.expired-button {
+  background-color: rgb(220, 20, 60, 0.2);
+  border: 1px solid rgb(237, 53, 0, 0.9);
 }

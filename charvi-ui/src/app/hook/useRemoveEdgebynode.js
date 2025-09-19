@@ -1,16 +1,16 @@
-import { useReactFlow } from '@xyflow/react';
+import { useReactFlow } from "@xyflow/react";
 
-export default function useRemoveEdgebynode(){
-    const { getEdges, setEdges } = useReactFlow();
-    
-    const removeallEdges=(nodeId)=>{
-        const currentEdges=getEdges()
+export default function useRemoveEdgebynode() {
+  const { getEdges, setEdges } = useReactFlow();
 
-        const connectedEdges=currentEdges.filter(
-            (e)=>(e.source!==nodeId && e.target!==nodeId)
-        )
-        setEdges(connectedEdges)
-    }
+  const removeallEdges = (nodeId) => {
+    const currentEdges = getEdges();
 
-    return removeallEdges
+    const connectedEdges = currentEdges.filter(
+      (e) => e.source !== nodeId && e.target !== nodeId,
+    );
+    setEdges(connectedEdges);
+  };
+
+  return removeallEdges;
 }

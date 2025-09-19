@@ -1,16 +1,23 @@
-import { Handle ,useNodeConnections} from '@xyflow/react';
+import { Handle, useNodeConnections } from "@xyflow/react";
 
-export default function Bsourcehandle(props){
+export default function Bsourcehandle(props) {
   const connections = useNodeConnections({
     handleType: "source",
     handleId: props.id,
-  })
+  });
 
-
-  
-  return(
+  return (
     <div>
-      <Handle isConnectable={connections.length < 1} isConnectableEnd={false} isValidConnection={(connection)=>connection.source !== connection.target} className='p-[4px]'  position="right" id={props.id}/>
+      <Handle
+        isConnectable={connections.length < 1}
+        isConnectableEnd={false}
+        isValidConnection={(connection) =>
+          connection.source !== connection.target
+        }
+        className="p-[4px]"
+        position="right"
+        id={props.id}
+      />
     </div>
-  )
+  );
 }
