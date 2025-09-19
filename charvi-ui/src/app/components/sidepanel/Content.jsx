@@ -30,7 +30,7 @@ export default function Content(){
     const collapsed=state==="collapsed"
 
     useEffect(()=>{
-        if(state){
+        if(!collapsed){
             const tlMaster=gsap.timeline({repeat:-2})
             features.forEach((word)=>{
                 let tlText=gsap.timeline({repeat:-1,yoyo:true})
@@ -60,7 +60,7 @@ export default function Content(){
                         <span>Platform</span>
                     </div>
                 </SidebarGroupLabel>
-                <Collapsible defaultOpen className="group/collapsible">
+                <Collapsible className="group/collapsible">
                     <SidebarMenuItem>
                     <CollapsibleTrigger asChild>
                         <SidebarMenuButton className={`cursor-pointer group rounded-lg py-[18px] w-full data-[state=closed]:hover:bg-[rgb(255,255,255,0.1)] data-[state=open]:hover:bg-[rgb(255,255,255,0.1)]`}>

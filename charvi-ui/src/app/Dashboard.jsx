@@ -6,7 +6,8 @@ import {
     useEdgesState,
     addEdge,
     MarkerType, 
-    ReactFlowProvider 
+    ReactFlowProvider ,
+    useViewport 
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
@@ -29,9 +30,10 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { Sidebar, SidebarContent,SidebarFooter,SidebarHeader} from "@/components/ui/sidebar"
 import Logoutaccount from './components/sidepanel/Logoutaccount';
 import Content from './components/sidepanel/Content';
+import Expiry from './components/Expiry';
 
 
-export default function Dashboard() {
+function Dashboard2() {
     let isSelected=false
     let selectedNodeId=''
     const live=useStore((state)=>state.live)
@@ -130,11 +132,22 @@ export default function Dashboard() {
     }
 
     // Function to add new Node on flow chart
+    //get current viewport
+    const { x, y, zoom } = useViewport();
     const addNode = useCallback(() => {
+        // To get random in same viewport
+        const randomScreenX = Math.random() * window.innerWidth;
+        const randomScreenY = Math.random() * window.innerHeight;
+
+        // convert screen coords -> flow coords
+        const flowX = (randomScreenX - x) / zoom;
+        const flowY = (randomScreenY - y) / zoom;
+
         const newNode = {
             id: uuid(),
             type: 'newnode',
-            position: { x: 250 + nodes.length * 50, y: 50 + nodes.length * 50 },
+            position:{ x: flowX, y: flowY },
+            // position: { x: 250 + nodes.length * 50, y: 50 + nodes.length * 50 },
             data: {
                 addbutton:'',
                 rmMediaorButons,
@@ -145,9 +158,9 @@ export default function Dashboard() {
 
     return (
         <SidebarProvider>
-            <Sidebar className={`transform-gpu`} collapsible='icon'>
+            <Sidebar className={``}>
                 <SidebarHeader className={``}>
-                    <div className='cursor-pointer flex items-start hover:bg-[rgb(255,255,255,0.1)] rounded-lg h-full w-full p-[5px]'>
+                    <div>
                         <Profile/>
                     </div>
                 </SidebarHeader>
@@ -162,9 +175,14 @@ export default function Dashboard() {
                     </div>
                 </SidebarFooter>
             </Sidebar>
-            <ReactFlowProvider>
                 <div className="h-screen w-screen bg-[#212121] bg-[url('/images/dashboard-bg.png')]">
-                    <SidebarTrigger className={`transition-all duration-300 transform-gpu absolute z-50 text-slate-50 m-[10px]`}/>
+                    <div className='flex items-center justify-center absolute z-50'>
+                        <SidebarTrigger className={`transition-all duration-300 transform-gpu text-slate-50 m-[10px]`}/>
+                        <div>
+                            <Expiry/>
+                        </div>
+                    </div>
+
                     <div className='bg-white rounded-[12px] p-[5px] cursor-pointer flex flex-row items-center gap-x-[10px] absolute right-5 top-5 z-50'>
                             <div className=''>
                                 <Live/>
@@ -194,6 +212,7 @@ export default function Dashboard() {
                         elementsSelectable={!live}
                         minZoom={0.7}
                         connectionMode="loose"
+                        proOptions={{ hideAttribution: true }}
                     >
                         <Background color='#212121' />
                         
@@ -257,7 +276,14 @@ export default function Dashboard() {
                             }}/>
                     </div>
                 </div>
-            </ReactFlowProvider>
         </SidebarProvider>
     );
+}
+
+export default function Dashboard(){
+    return(
+        <ReactFlowProvider>
+            <Dashboard2/>
+        </ReactFlowProvider>
+    )
 }
