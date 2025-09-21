@@ -33,10 +33,10 @@ export default function Deleteall() {
               setNodes([]);
               rmallNodes();
             }}
-            className="flex space-x-[2px] hover:bg-[rgb(255,255,255,0.1)] active:bg-[#353535] rounded-lg p-[5px] cursor-pointer"
+            className="flex space-x-[2px] hover:bg-[rgba(228,90,90,0.1)] active:bg-[#353535] rounded-lg p-[5px] cursor-pointer"
           >
             <div className="flex items-center relative px-[5px]">
-              <div className="text-zinc-400 h-[17px] w-[17px] flex items-center justify-center">
+              <div className= "text-zinc-400 h-[17px] w-[17px] flex items-center justify-center">
                 <Message />
               </div>
               <div className="absolute top-1 right-1 text-red-500 h-[15px] w-[15px]">
@@ -50,7 +50,7 @@ export default function Deleteall() {
 
           <div
             onClick={() => setEdges([])}
-            className="flex space-x-[2px] items-center active:bg-[#353535]  hover:bg-[rgb(255,255,255,0.1)] rounded-lg p-[5px] cursor-pointer"
+            className="flex space-x-[2px] items-center active:bg-[#353535]  hover:bg-[rgba(228,90,90,0.1)] rounded-lg p-[5px] cursor-pointer"
           >
             <div className="flex items-center relative px-[5px]">
               <div className="text-zinc-400 h-[17px] w-[17px] flex items-center justify-center">

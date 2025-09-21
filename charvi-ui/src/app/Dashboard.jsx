@@ -37,6 +37,8 @@ import Logoutaccount from "./components/sidepanel/Logoutaccount";
 import Content from "./components/sidepanel/Content";
 import Expiry from "./components/Expiry";
 
+import { SessionAuth } from "supertokens-auth-react/recipe/session";
+
 function Dashboard2() {
   let isSelected = false;
   let selectedNodeId = "";
@@ -314,7 +316,9 @@ function Dashboard2() {
 export default function Dashboard() {
   return (
     <ReactFlowProvider>
-      <Dashboard2 />
+      <SessionAuth>
+        <Dashboard2 />
+      </SessionAuth>
     </ReactFlowProvider>
   );
 }
