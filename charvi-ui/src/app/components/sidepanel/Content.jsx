@@ -1,5 +1,10 @@
+//svg
 import Lifebuoy from "@/app/svg/Lifebuoy";
 import Youtube from "@/app/svg/Youtube";
+import Next from "@/app/svg/Next";
+import Intelligence from "@/app/svg/Intelligence";
+
+//sidebar
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -15,13 +20,19 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import Next from "@/app/svg/Next";
-import Intelligence from "@/app/svg/Intelligence";
 
+
+// gsap
 import gsap from "gsap";
 gsap.registerPlugin(TextPlugin);
 
-import { useEffect } from "react";
+// react
+import { useEffect, useState } from "react";
+import useCreateorder from "@parent-hooks/useCreateorder"
+import usePayment from "@parent-hooks/usePayment";
+
+//Toast
+import Toast from "@/app/utils/Toast";
 
 export default function Content() {
   const features = [
@@ -31,7 +42,78 @@ export default function Content() {
   ];
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
+  const [onemonthplan,setOnemonthplan]=useState()
+  const [threemonthplan,setThreemonthplan]=useState()
+  const [oneyearplan,setOneyearplan]=useState()
+  const verifyPayment=usePayment()
 
+
+  // creating order-id
+  useEffect(()=>{
+    const createOrder=useCreateorder()
+
+    ;(async()=>{
+      
+      //1 month plan
+      const onemonthplan=await createOrder('499')
+      setOnemonthplan(onemonthplan)
+    
+      //3 month plan
+      const threemonthplan=await createOrder('449')
+      setThreemonthplan(threemonthplan)
+
+      //1 year plan
+      const oneyearplan=await createOrder('399')
+      setOneyearplan(oneyearplan)
+
+    })()
+  },[])
+
+  console.log("1 Month response:",onemonthplan)
+  console.log("3 Month response:",threemonthplan)
+  console.log("1 Year response:",oneyearplan)
+
+
+  // payment verifcation and options functions
+  const paynow=(plan)=>{
+    if(!plan){
+      Toast("Something went wrong","please try again later","ordererr")
+    }
+    else{
+       const  options = {
+            "key": "rzp_test_RFXmfi1uLocqNg", // Enter the Key ID generated from the Dashboard
+            "amount": "50000", // Amount is in currency subunits.
+            "currency": "INR",
+            "name": "Acme Corp", //your business name
+            "description": "Test Transaction",
+            "image": "",
+            "order_id": plan.orderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+            "handler": async(response)=>{
+              await verifyPayment(response)
+            },
+            "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information, especially their phone number
+                "name": "Gaurav Kumar", //your customer's name
+                "email": "gaurav.kumar@example.com", 
+                "contact": "+919876543210"  //Provide the customer's phone number for better conversion rates 
+            },
+            "notes": {
+                "address": "Razorpay Corporate Office"
+            },
+            "theme": {
+                "color": "#3399cc"
+                }
+        }
+        const rzp1 = new Razorpay(options);
+          rzp1.on('payment.failed', function (response){
+            //on is event listerner we cannot throw into catch or fetch 
+            Toast("Something went wrong",response.error.description,"verifypaymentError")
+          });
+          rzp1.open();
+        }
+  }
+
+
+  // animation
   useEffect(() => {
     if (!collapsed) {
       const tlMaster = gsap.timeline({ repeat: -2 });
@@ -88,7 +170,7 @@ export default function Content() {
             <CollapsibleContent>
               <SidebarMenuSub>
                 <SidebarMenuSubItem className={`cursor-pointer`}>
-                  <div className="hover:bg-[rgb(255,255,255,0.1)] rounded-lg p-[4px] text-slate-50">
+                  <div onClick={()=>paynow(onemonthplan)} className="hover:bg-[rgb(255,255,255,0.1)] rounded-lg p-[4px] text-slate-50">
                     <span className="mx-[5px]">
                       Rs.499
                       <span className="font-semibold text-muted-foreground text-[12px]">
@@ -103,7 +185,7 @@ export default function Content() {
                       Pay Now
                     </a>
                   </div>
-                  <div className="hover:bg-[rgb(255,255,255,0.1)] rounded-lg p-[4px] text-slate-50">
+                  <div onClick={()=>paynow(threemonthplan)} className="hover:bg-[rgb(255,255,255,0.1)] rounded-lg p-[4px] text-slate-50">
                     <span className="mx-[5px]">
                       Rs.449
                       <span className="font-semibold text-muted-foreground text-[12px]">
@@ -118,7 +200,7 @@ export default function Content() {
                       Pay Now
                     </a>
                   </div>
-                  <div className="hover:bg-[rgb(255,255,255,0.1)] rounded-lg p-[4px] text-slate-50">
+                  <div onClick={()=>paynow(oneyearplan)} className="hover:bg-[rgb(255,255,255,0.1)] rounded-lg p-[4px] text-slate-50">
                     <span className="mx-[5px]">
                       Rs.399
                       <span className="font-semibold text-muted-foreground text-[12px]">

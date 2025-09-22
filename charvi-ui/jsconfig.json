@@ -3,7 +3,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@parent-hooks/*":["hooks/*"]
     }
-  }
+  },
+  "include": ["src"]
 }

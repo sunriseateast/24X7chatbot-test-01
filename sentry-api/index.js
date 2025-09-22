@@ -7,7 +7,14 @@ import supertokens from "supertokens-node";
 import './Supertoken.config.api.js'
 import { middleware } from "supertokens-node/framework/express";
 import { errorHandler } from "supertokens-node/framework/express";
+import { verifySession } from "supertokens-node/recipe/session/framework/express";
 
+
+//middlewares
+import serverErrorhandler from './middlewares/serverErrorhandler.js';
+
+//routes
+import order_routes from './routes/order.routes.js'
 
 const app=express()
 const PORT=process.env.PORT || 7000
@@ -23,6 +30,9 @@ app.use(
 );
 app.use(middleware());
 app.use(express.json())
+app.use('/app/order',verifySession(),order_routes)
+
+
 
 
 app.get('/',(req,res)=>{
@@ -31,6 +41,8 @@ app.get('/',(req,res)=>{
 
 
 app.use(errorHandler()); //supertoken error handler
+app.use(serverErrorhandler) //user define error handler
+
 app.listen(PORT,()=>{
     console.log("server is listening")
 })

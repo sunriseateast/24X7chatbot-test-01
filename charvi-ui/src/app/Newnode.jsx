@@ -17,7 +17,7 @@ import UrlButton from "./components/UrlButton.jsx";
 import useStore from "./hook/useStore.js";
 import Toast from "./utils/Toast.jsx";
 
-const Newnode = React.memo(function Newnode({ selected, id, data }) {
+function Newnode({ selected, id, data }) {
   const { deleteElements } = useReactFlow(); // To delete Node using id
   const [values, setValues] = useState([]); // Act as bowl of buttons here
   const updateNodeInternals = useUpdateNodeInternals(); // To update Nodes
@@ -343,6 +343,6 @@ const Newnode = React.memo(function Newnode({ selected, id, data }) {
       </div>
     </div>
   );
-});
+};
 
 export default Newnode;
