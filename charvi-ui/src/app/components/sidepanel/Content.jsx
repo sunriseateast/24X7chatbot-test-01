@@ -73,15 +73,16 @@ export default function Content() {
     })()
   },[isPayment])
 
-  console.log(isPayment)
+
 
   // console.log("1 Month response:",onemonthplan)
   // console.log("3 Month response:",threemonthplan)
   // console.log("1 Year response:",oneyearplan)
 
-  
+
   // payment verifcation and options functions
   const paynow=(plan)=>{
+    navigation("/app");
     if(!plan){
       Toast("Something went wrong","please try again later","ordererr")
     }
@@ -94,6 +95,7 @@ export default function Content() {
             "image": "",
             "order_id": plan.orderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
             "handler": async(response)=>{
+              navigation("/app");
               const payment=await verifyPayment(response)
               setIsPayment(payment)
             },
@@ -142,6 +144,8 @@ export default function Content() {
       };
     }
   }, [features]);
+
+  console.log(isPayment)
 
   return (
     <SidebarGroup

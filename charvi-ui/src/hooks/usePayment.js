@@ -7,6 +7,7 @@ export default function usePayment(){
 
     const verifyPayment=async(response)=>{
         try{
+            navigation("/app");
             const response2=await fetch(VERIFY_API,{
                 method:"POST",
                 credentials:"include",
@@ -23,7 +24,7 @@ export default function usePayment(){
                 throw new Error(data)
             }   
             else{
-                navigation("/app");
+                // navigation("/app");
                 return (data.success)
             }
         }

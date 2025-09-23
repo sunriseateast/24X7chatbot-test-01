@@ -19,9 +19,7 @@ function App() {
           <Routes>
             {getSuperTokensRoutesForReactRouterDom(reactRouterDom, [ThirdPartyPreBuiltUI])}
             <Route path="/app" element={
-             
                 <Dashboard/>
-              
               }>
             </Route>
             <Route path='/' element={<Home/>}></Route>
