@@ -6,8 +6,8 @@ import ThirdParty, {Google} from "supertokens-auth-react/recipe/thirdparty";
 SuperTokens.init({
     appInfo: {
         appName: "24X7chatbot",
-        apiDomain: " http://localhost:8000/",
-        websiteDomain: " http://localhost:5173/",
+        apiDomain: "http://localhost:8000/",
+        websiteDomain: "http://localhost:5173/",
         apiBasePath: "/auth",
         websiteBasePath: "/auth",
     },

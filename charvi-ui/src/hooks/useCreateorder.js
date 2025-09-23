@@ -1,8 +1,10 @@
 import Toast from "@/app/utils/Toast"
 export default function useCreateorder(){
+    const ORDER_API=`${import.meta.env.VITE_API_URL}/app/order/create-order`
+
     const createOrder=async(amount)=>{
       try{
-          const response=await fetch(`http://localhost:8000/app/order/create-order`,{
+          const response=await fetch(ORDER_API,{
             method:"POST",
             credentials:"include",
             headers:{
@@ -21,7 +23,6 @@ export default function useCreateorder(){
           }
       }
       catch(error){
-        // return({success:false,message:error.message})
         Toast("Something went wrong",error.message,"orderError")
       }
     }

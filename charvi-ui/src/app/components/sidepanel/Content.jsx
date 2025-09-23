@@ -30,6 +30,7 @@ gsap.registerPlugin(TextPlugin);
 import { useEffect, useState } from "react";
 import useCreateorder from "@parent-hooks/useCreateorder"
 import usePayment from "@parent-hooks/usePayment";
+import {useNavigate} from 'react-router-dom'
 
 //Toast
 import Toast from "@/app/utils/Toast";
@@ -42,16 +43,19 @@ export default function Content() {
   ];
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
+
   const [onemonthplan,setOnemonthplan]=useState()
   const [threemonthplan,setThreemonthplan]=useState()
   const [oneyearplan,setOneyearplan]=useState()
-  const verifyPayment=usePayment()
+  const [isPayment,setIsPayment]=useState(false)
+  const navigation=useNavigate()
 
+  const verifyPayment=usePayment()
+  const RZP_ID=import.meta.env.VITE_RZP_ID
 
   // creating order-id
   useEffect(()=>{
     const createOrder=useCreateorder()
-
     ;(async()=>{
       
       //1 month plan
@@ -67,13 +71,15 @@ export default function Content() {
       setOneyearplan(oneyearplan)
 
     })()
-  },[])
+  },[isPayment])
 
-  console.log("1 Month response:",onemonthplan)
-  console.log("3 Month response:",threemonthplan)
-  console.log("1 Year response:",oneyearplan)
+  console.log(isPayment)
 
+  // console.log("1 Month response:",onemonthplan)
+  // console.log("3 Month response:",threemonthplan)
+  // console.log("1 Year response:",oneyearplan)
 
+  
   // payment verifcation and options functions
   const paynow=(plan)=>{
     if(!plan){
@@ -81,27 +87,28 @@ export default function Content() {
     }
     else{
        const  options = {
-            "key": "rzp_test_RFXmfi1uLocqNg", // Enter the Key ID generated from the Dashboard
-            "amount": "50000", // Amount is in currency subunits.
+            "key": RZP_ID, // Enter the Key ID generated from the Dashboard
             "currency": "INR",
             "name": "Acme Corp", //your business name
             "description": "Test Transaction",
             "image": "",
             "order_id": plan.orderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
             "handler": async(response)=>{
-              await verifyPayment(response)
-            },
-            "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information, especially their phone number
-                "name": "Gaurav Kumar", //your customer's name
-                "email": "gaurav.kumar@example.com", 
-                "contact": "+919876543210"  //Provide the customer's phone number for better conversion rates 
-            },
-            "notes": {
-                "address": "Razorpay Corporate Office"
+              const payment=await verifyPayment(response)
+              setIsPayment(payment)
             },
             "theme": {
-                "color": "#3399cc"
-                }
+              "color": "#3399cc"
+            },
+            "prefill": {
+              contact: '+9999999999'
+            },
+            modal: {
+              ondismiss: function () {
+                Toast("Payment Cancelled", "You can try again anytime", "paymentCancelled");
+                navigation("/app")
+              }
+            }
         }
         const rzp1 = new Razorpay(options);
           rzp1.on('payment.failed', function (response){
@@ -111,7 +118,6 @@ export default function Content() {
           rzp1.open();
         }
   }
-
 
   // animation
   useEffect(() => {
@@ -178,13 +184,11 @@ export default function Content() {
                         (1 month)
                       </span>
                     </span>
-                    <a
-                      href="http://localhost:5173/"
-                      className="mx-[11px] text-blue-600 visited:text-purple-600 ... underline text-[12px]"
-                    >
+                    <span className="mx-[11px] text-blue-600 visited:text-purple-600 ... underline text-[12px]">
                       Pay Now
-                    </a>
+                    </span>
                   </div>
+
                   <div onClick={()=>paynow(threemonthplan)} className="hover:bg-[rgb(255,255,255,0.1)] rounded-lg p-[4px] text-slate-50">
                     <span className="mx-[5px]">
                       Rs.449
@@ -193,13 +197,11 @@ export default function Content() {
                         (3 months)
                       </span>
                     </span>
-                    <a
-                      href="http://localhost:5173/"
-                      className="mx-[5px] text-blue-600 visited:text-purple-600 ... underline text-[12px]"
-                    >
+                    <span className="mx-[5px] text-blue-600 visited:text-purple-600 ... underline text-[12px]">
                       Pay Now
-                    </a>
+                    </span>
                   </div>
+
                   <div onClick={()=>paynow(oneyearplan)} className="hover:bg-[rgb(255,255,255,0.1)] rounded-lg p-[4px] text-slate-50">
                     <span className="mx-[5px]">
                       Rs.399
@@ -208,12 +210,9 @@ export default function Content() {
                         (12 months)
                       </span>
                     </span>
-                    <a
-                      href="http://localhost:5173/"
-                      className="text-blue-600 visited:text-purple-600 ... underline text-[12px]"
-                    >
+                    <span className="text-blue-600 visited:text-purple-600 ... underline text-[12px]">
                       Pay Now
-                    </a>
+                    </span>
                   </div>
                 </SidebarMenuSubItem>
               </SidebarMenuSub>

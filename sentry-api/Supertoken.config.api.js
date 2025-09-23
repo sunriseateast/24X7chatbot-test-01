@@ -30,6 +30,9 @@ supertokens.init({
                 }]
             }
         }),
-        Session.init() // initializes session features
+        Session.init({
+            cookieSameSite: "lax",
+            cookieSecure: false,
+        }) // initializes session features
     ]
 });

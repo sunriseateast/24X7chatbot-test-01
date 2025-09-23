@@ -9,33 +9,44 @@ export const createOrder=asyncHandler(async (req,res,next)=>{
     const plans=['499','449','399']
 
     if(!amount){
-        const err=new createError(400,"please specify amount")
-        throw err
+        throw createError(400,"please specify the amount")
     }
     else{
         const hasplan=plans.includes(amount)
 
+        //convert plans into months here
+        const newAmount=parseInt(amount)
+        let totalAmount
+        if(newAmount===449){
+            totalAmount=newAmount*3
+        }
+        else if(newAmount===399){
+            totalAmount=newAmount*12
+        }
+        else{
+            totalAmount=newAmount
+        }
+
         if(hasplan){
             const instance=new Razorpay({key_id:process.env.RZP_ID,key_secret:process.env.RZP_SECRET})
             const options={
-                amount:parseInt(amount)*100,
-                currency:"INR",
-                receipt:"order_rcptid_11"
+                amount:totalAmount*100,
+                currency:"INR"
             }
 
-            instance.orders.create(options, function(err, order) {
-                if(err){
-                    const err=new createError(400,'error while creating order')
-                    throw err
-                }
-                else{
-                    return res.status(200).json({success:true,orderId:order.id})
-                }
+            //Wrap this callback into promise so we can throw the error
+            const order= await new Promise((resolve,reject)=>{
+                instance.orders.create(options,function(err,order){
+                    if(err){
+                         return reject(createError(400,"Error while creating order"))
+                    }
+                    resolve (order)
+                })
             })
+            return res.status(200).json({success:true,orderId:order.id})
         }
         else{
-            const err=new createError(400,'Invalid amount set')
-            throw err
+            throw createError(400,'Invalid amount set')
         }
     }
 })
@@ -46,10 +57,9 @@ export const verifyPayment=asyncHandler((req,res,next)=>{
     const ispaymentverify=validatePaymentVerification({"order_id": orderId, "payment_id": paymentId }, signature, process.env.RZP_SECRET);
 
     if(ispaymentverify){
-        return res.status(200).json({sucess:true,message:"plan activated"})
+        return res.status(200).json({success:true,message:"plan activated"})
     }
     else{
-        const err=new createError(401,"payment verification failed")
-        throw err
+        throw createError(400,"payment verification failed")
     }
 })

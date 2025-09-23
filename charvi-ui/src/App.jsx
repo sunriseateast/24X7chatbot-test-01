@@ -6,6 +6,7 @@ import '../Supertoken.config.ui.js'
 import { SuperTokensWrapper } from "supertokens-auth-react";
 import { getSuperTokensRoutesForReactRouterDom } from "supertokens-auth-react/ui";
 import { ThirdPartyPreBuiltUI } from 'supertokens-auth-react/recipe/thirdparty/prebuiltui'
+import { SessionAuth } from "supertokens-auth-react/recipe/session";
 
 import Dashboard from "./app/Dashboard";
 import Home from "./Home";
@@ -17,7 +18,12 @@ function App() {
         <BrowserRouter>
           <Routes>
             {getSuperTokensRoutesForReactRouterDom(reactRouterDom, [ThirdPartyPreBuiltUI])}
-            <Route path="/app" element={<Dashboard />}></Route>
+            <Route path="/app" element={
+             
+                <Dashboard/>
+              
+              }>
+            </Route>
             <Route path='/' element={<Home/>}></Route>
           </Routes>
         </BrowserRouter>

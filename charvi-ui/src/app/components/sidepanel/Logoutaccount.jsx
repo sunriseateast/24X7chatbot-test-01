@@ -20,13 +20,13 @@ export default function Logoutaccount() {
       <div className="space-y-2">
         <div className="flex gap-x-3">
           <a
-            href="http://localhost:5173/"
+            href="https://www.google.com/"
             className="text-blue-600 visited:text-purple-600 ... underline text-[12px]"
           >
             Terms & conditions
           </a>
           <a
-            href="http://localhost:5173/"
+            href="https://www.google.com/"
             className="mx-[11px] text-blue-600 visited:text-purple-600 ... underline text-[12px]"
           >
             Privacy & Policy
