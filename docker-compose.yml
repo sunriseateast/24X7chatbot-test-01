@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  postgresdb:
+    image: 'postgres:17.6'
+    env_file:
+      - ./env/postgresdb.env
+    ports:
+      - target: 5432       # container port
+        published: 5432    # host port
+        protocol: tcp
+        mode: host 
+    networks:
+      - app_network
+    volumes:
+      - ./script:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'supertokens_user', '-d', 'supertokens']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.5"
+          memory: 1024M
+        limits:
+          cpus: "1.0"
+          memory: 2024M
+
+  pgbouncer:
+    image: edoburu/pgbouncer:v1.24.1-p1
+    env_file:
+      - ./env/pgbouncer.env
+    ports:
+      - target: 6432
+        published: 6432
+        protocol: tcp
+        mode: host
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "postgresdb", "-U", "supertokens_user"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.05"
+          memory: 64M
+        limits:
+          cpus: "0.1"
+          memory: 128M
+
+
+  supertokensCore:
+    image: registry.supertokens.io/supertokens/supertokens-postgresql:latest
+    ports:
+      - target: 3567
+        published: 3567
+        protocol: tcp
+        mode: host
+    environment:
+      POSTGRESQL_CONNECTION_URI: "postgresql://supertokens_user:s0meP%40%24%24word%5E@postgresdb:5432/supertokens"
+    networks:
+      - app_network
+    restart: unless-stopped
+    healthcheck:
+      test: >
+        bash -c 'exec 3<>/dev/tcp/127.0.0.1/3567 && echo -e "GET /hello HTTP/1.1\r\nhost: 127.0.0.1:3567\r\nConnection: close\r\n\r\n" >&3 && cat <&3 | grep "Hello"'
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+        limits:
+          cpus: "0.5"
+          memory: 512M
+
+networks:
+  app_network:
+    driver: overlay
+    attachable: true

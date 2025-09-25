@@ -7,7 +7,7 @@ import ThirdParty from "supertokens-node/recipe/thirdparty";
 supertokens.init({
     framework: "express",
     supertokens: {
-        connectionURI: process.env.DATABASE_URL
+        connectionURI: process.env.SUPERTOKENS_DATABASE_URL
     },
     appInfo: {
         appName: "24X7chatbot",
@@ -23,8 +23,8 @@ supertokens.init({
                     config: {
                         thirdPartyId: "google",
                         clients: [{
-                            clientId: process.env.CLIENT_ID,
-                            clientSecret: process.env.CLIENT_SECRET
+                            clientId: process.env.GOOGLE_CLIENT_ID,
+                            clientSecret: process.env.GOOGLE_CLIENT_SECRET
                         }]
                     }
                 }]
