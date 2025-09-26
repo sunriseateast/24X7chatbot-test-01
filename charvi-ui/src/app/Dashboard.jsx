@@ -12,7 +12,7 @@ import {
 
 import "@xyflow/react/dist/style.css";
 import Newnode from "./Newnode";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Message from "./svg/Message";
 import Attachment from "./svg/Attachment";
 import List from "./svg/List";
@@ -38,6 +38,9 @@ import Content from "./components/sidepanel/Content";
 import Expiry from "./components/Expiry";
 
 import { SessionAuth } from "supertokens-auth-react/recipe/session";
+
+import updateUserinfo from "./utils/updateUserinfo.js";
+
 
 function Dashboard2() {
   let isSelected = false;
@@ -162,6 +165,13 @@ function Dashboard2() {
     };
     setNodes((nds) => [...nds, newNode]);
   });
+
+  //useffect to get userinfo and if not update postgres users db
+  useEffect(()=>{
+    ;(async()=>{
+      const response=updateUserinfo()
+    })()
+  },[])
 
   return (
     <SidebarProvider>

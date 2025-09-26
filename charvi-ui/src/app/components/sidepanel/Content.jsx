@@ -145,8 +145,7 @@ export default function Content() {
     }
   }, [features]);
 
-  console.log(isPayment)
-
+  
   return (
     <SidebarGroup
       className={`flex gap-y-[15px] flex-col-4 transistion-all duration-300`}

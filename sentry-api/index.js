@@ -15,6 +15,7 @@ import serverErrorhandler from './middlewares/serverErrorhandler.js';
 
 //routes
 import order_routes from './routes/order.routes.js'
+import user_routes from './routes/users.routes.js'
 
 const app=express()
 const PORT=process.env.PORT || 7000
@@ -31,7 +32,7 @@ app.use(
 app.use(middleware());
 app.use(express.json())
 app.use('/app/order',verifySession(),order_routes)
-
+app.use('/app/users',verifySession(),user_routes)
 
 
 
