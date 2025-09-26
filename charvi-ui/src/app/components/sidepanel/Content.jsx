@@ -47,7 +47,7 @@ export default function Content() {
   const [onemonthplan,setOnemonthplan]=useState()
   const [threemonthplan,setThreemonthplan]=useState()
   const [oneyearplan,setOneyearplan]=useState()
-  const [isPayment,setIsPayment]=useState(false)
+  const [isPayment,setIsPayment]=useState()
   const navigation=useNavigate()
 
   const verifyPayment=usePayment()

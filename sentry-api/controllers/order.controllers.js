@@ -3,6 +3,15 @@ import createError from "http-errors";
 import asyncHandler from '../asyncHandler.js';
 import { validatePaymentVerification} from "razorpay/dist/utils/razorpay-utils.js";
 
+
+import { usersinfoTable } from "../models/postgres.schema.js"
+import db from '../db/postgres.con.js'
+import setExpiry from '../utils/setExpiry.js';
+import { eq } from 'drizzle-orm';
+
+//Razorpay instance
+ const instance=new Razorpay({key_id:process.env.RZP_ID,key_secret:process.env.RZP_SECRET})
+
 //To create the order
 export const createOrder=asyncHandler(async (req,res,next)=>{
     const {amount}=req.body
@@ -17,21 +26,27 @@ export const createOrder=asyncHandler(async (req,res,next)=>{
         //convert plans into months here
         const newAmount=parseInt(amount)
         let totalAmount
+        let days
         if(newAmount===449){
             totalAmount=newAmount*3
+            days=90
         }
         else if(newAmount===399){
             totalAmount=newAmount*12
+            days=365
         }
         else{
             totalAmount=newAmount
+            days=30
         }
 
         if(hasplan){
-            const instance=new Razorpay({key_id:process.env.RZP_ID,key_secret:process.env.RZP_SECRET})
             const options={
                 amount:totalAmount*100,
-                currency:"INR"
+                currency:"INR",
+                notes:{
+                    days:days
+                }
             }
 
             //Wrap this callback into promise so we can throw the error
@@ -52,11 +67,40 @@ export const createOrder=asyncHandler(async (req,res,next)=>{
 })
 
 //To verify the payment
-export const verifyPayment=asyncHandler((req,res,next)=>{
+export const verifyPayment=asyncHandler(async(req,res,next)=>{
     const {paymentId, orderId, signature}=req.body
     const ispaymentverify=validatePaymentVerification({"order_id": orderId, "payment_id": paymentId }, signature, process.env.RZP_SECRET);
 
+    const session=req.session
+    const userId=session.getUserId()
+
     if(ispaymentverify){
+        const orderdetails=await instance.orders.fetch(orderId);
+        const {days}=orderdetails.notes
+        
+        //Insert expiry into users db in postgres user_info table
+        try{
+            const result=await db
+            .select({ expiry: usersinfoTable.expiry })
+            .from(usersinfoTable)
+            .where(eq(usersinfoTable.userId,userId))
+            const currentExpiry=result[0]?.expiry || 0
+
+            const {activeon,expiry}=setExpiry(days,currentExpiry)
+            
+            await db
+            .update(usersinfoTable)
+            .set({
+                activeon:activeon,
+                expiry:expiry,
+                planStatus:"paid"
+            })
+            .where(eq(usersinfoTable.userId, userId))
+        }
+        catch(error){
+            throw createError(503,"contact support team")
+        }
+
         return res.status(200).json({success:true,message:"plan activated"})
     }
     else{

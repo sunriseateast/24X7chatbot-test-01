@@ -1,4 +1,4 @@
-import { integer, pgEnum, pgTable, varchar, boolean } from "drizzle-orm/pg-core";
+import { integer, pgEnum, pgTable, varchar, boolean,bigint } from "drizzle-orm/pg-core";
 
 export const planStatusEnum=pgEnum('plan_status',["paid","free"])
 
@@ -10,6 +10,6 @@ export const usersinfoTable = pgTable("users_info", {
   emailVerified:boolean('email_verfied').notNull().default(false),
   planStatus:planStatusEnum().notNull().default('free'),
   duration:varchar({ length: 255 }).notNull().default('30days'),
-  activeon:varchar({ length: 255 }).notNull(),
-  expiry:varchar({ length: 255 }).notNull()
+  activeon: bigint("activeon", { mode: "number" }).notNull(),
+  expiry: bigint("expiry", { mode: "number" }).notNull()
 });

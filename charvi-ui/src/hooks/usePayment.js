@@ -21,7 +21,7 @@ export default function usePayment(){
             const data=await response2.json()
 
             if(data.success==false){
-                throw new Error(data)
+                throw new Error(data.message)
             }   
             else{
                 // navigation("/app");
@@ -30,7 +30,7 @@ export default function usePayment(){
         }
         catch(error){
             Toast("Something went wrong",error.message,"paymentError")
-            return(error.success)
+            return(false)
         }
     }
 
