@@ -86,14 +86,15 @@ export const verifyPayment=asyncHandler(async(req,res,next)=>{
             .where(eq(usersinfoTable.userId,userId))
             const currentExpiry=result[0]?.expiry || 0
 
-            const {activeon,expiry}=setExpiry(days,currentExpiry)
+            const {activeon,expiry,duration}=setExpiry(days,currentExpiry)
             
             await db
             .update(usersinfoTable)
             .set({
+                planStatus:"paid",
+                duration:duration,
                 activeon:activeon,
                 expiry:expiry,
-                planStatus:"paid"
             })
             .where(eq(usersinfoTable.userId, userId))
         }

@@ -46,9 +46,10 @@ function Dashboard2() {
   let isSelected = false;
   let selectedNodeId = "";
   const live = useStore((state) => state.live);
+  const setSse=useStore((state)=>state.setSse)
   const nodeTypes = useMemo(() => ({ newnode: Newnode }), []);
   const getNodeObj = useStore((state) => state.getNodeObj);
-  console.log(getNodeObj());
+  // console.log(getNodeObj());
 
   // Array of initial Nodes
   const initialNodes = useMemo(() => [
@@ -172,6 +173,28 @@ function Dashboard2() {
       const response=updateUserinfo()
     })()
   },[])
+
+
+  //to get live expiry status from sse conatiner
+  useEffect(()=>{
+    const eventSoure=new EventSource("http://localhost:4000/sse",{
+      withCredentials: true
+    })
+
+    eventSoure.addEventListener("planExpiry",({data})=>{
+      const contents=JSON.parse(data)
+      setSse(contents)
+    })
+
+    eventSoure.onerror=(err)=>{
+      Toast("Something went wrong","Error while fetching expiry","fetchexipryError")
+    }
+
+    return(()=>{
+      eventSoure.close()
+    })
+  },[])
+
 
   return (
     <SidebarProvider>

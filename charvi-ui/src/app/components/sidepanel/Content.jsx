@@ -35,6 +35,10 @@ import {useNavigate} from 'react-router-dom'
 //Toast
 import Toast from "@/app/utils/Toast";
 
+//import store
+import useStore from "@/app/hook/useStore";
+
+
 export default function Content() {
   const features = [
     "no need to create flows😇",
@@ -52,6 +56,10 @@ export default function Content() {
 
   const verifyPayment=usePayment()
   const RZP_ID=import.meta.env.VITE_RZP_ID
+
+  //store values
+  const setPayment=useStore((state)=>state.setPayment)
+  const getStorepayment=useStore((state)=>state.isPayment)
 
   // creating order-id
   useEffect(()=>{
@@ -98,6 +106,9 @@ export default function Content() {
               navigation("/app");
               const payment=await verifyPayment(response)
               setIsPayment(payment)
+              if(payment){
+                setPayment(true)
+              }
             },
             "theme": {
               "color": "#3399cc"

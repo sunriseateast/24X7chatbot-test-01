@@ -5,18 +5,35 @@ import { subscribeWithSelector } from "zustand/middleware";
 const useStore = create(
   subscribeWithSelector(
     immer((set, get) => ({
-      // Status of live
+      //To set live status
       live: false,
-
-      // To set live status
       setlive: (status) => {
         set((state) => {
           state.live = status;
         });
       },
+
+      //To get payment is true or false so respective
+      //component will update temselves
+      isPayment: false,
+      setPayment:(status)=>{
+        set((state)=>{
+          state.isPayment=status
+        })
+      },
+
+
+      //To store live status of expiry from sse
+      sse:false,
+      setSse:(status)=>{
+        set((state)=>{
+          state.sse=status
+        })
+      },
+
+      //nodes operations
       nodes: {},
       validationError: [],
-
       // To remove all nodes from store
       rmallNodes: () => {
         set((state) => {

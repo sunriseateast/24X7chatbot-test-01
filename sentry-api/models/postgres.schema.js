@@ -9,7 +9,7 @@ export const usersinfoTable = pgTable("users_info", {
   email: varchar({ length: 255 }).notNull().unique(),
   emailVerified:boolean('email_verfied').notNull().default(false),
   planStatus:planStatusEnum().notNull().default('free'),
-  duration:varchar({ length: 255 }).notNull().default('30days'),
+  duration:bigint("duration", { mode: "number" }).notNull(),
   activeon: bigint("activeon", { mode: "number" }).notNull(),
   expiry: bigint("expiry", { mode: "number" }).notNull()
 });
