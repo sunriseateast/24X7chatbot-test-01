@@ -54,7 +54,6 @@ services:
           cpus: "0.1"
           memory: 128M
 
-
   supertokensCore:
     image: registry.supertokens.io/supertokens/supertokens-postgresql:latest
     ports:
@@ -70,8 +69,8 @@ services:
     healthcheck:
       test: >
         bash -c 'exec 3<>/dev/tcp/127.0.0.1/3567 && echo -e "GET /hello HTTP/1.1\r\nhost: 127.0.0.1:3567\r\nConnection: close\r\n\r\n" >&3 && cat <&3 | grep "Hello"'
-      interval: 10s
-      timeout: 5s
+      interval: 20s
+      timeout: 10s
       retries: 5
     deploy:
       resources:
@@ -81,6 +80,32 @@ services:
         limits:
           cpus: "0.5"
           memory: 512M
+
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    ports:
+      - target: 5672
+        published: 5672
+        protocol: tcp
+        mode: host
+      - target: 15672
+        published: 15672
+        protocol: tcp
+        mode: host
+    networks:
+      - app_network
+    volumes:
+      - ./script/definitions.json:/etc/rabbitmq/definitions.json:ro
+    env_file:
+      - ./env/rabbitmq.env
+    environment:
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-rabbitmq_management load_definitions \"/etc/rabbitmq/definitions.json\""
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
 
 networks:
   app_network:

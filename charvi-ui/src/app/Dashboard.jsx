@@ -21,7 +21,6 @@ import Url from "./svg/Url";
 import Live from "./api/Live";
 import useStore from "./hook/useStore.js";
 import "./css/style.css";
-import Deleteall from "./utils/Deleteall";
 import { Toaster } from "react-hot-toast";
 import Toast from "./utils/Toast";
 import { v4 as uuid } from "uuid";
@@ -169,9 +168,16 @@ function Dashboard2() {
 
   //useffect to get userinfo and if not update postgres users db
   useEffect(()=>{
+    let ignore=false
+
+    if(ignore) return
     ;(async()=>{
       const response=updateUserinfo()
     })()
+
+    return(()=>{
+      ignore=true
+    })
   },[])
 
 
@@ -197,7 +203,7 @@ function Dashboard2() {
 
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={false}>
       <Sidebar className={``}>
         <SidebarHeader className={``}>
           <div>
@@ -216,22 +222,17 @@ function Dashboard2() {
         </SidebarFooter>
       </Sidebar>
       <div className="h-screen w-screen bg-[#212121] bg-[url('/images/dashboard-bg.png')]">
-        <div className="flex items-center justify-center absolute z-50">
+        <div className="flex flex-row items-center justify-center absolute z-50">
           <SidebarTrigger
             className={`transition-all duration-300 transform-gpu text-slate-50 m-[10px]`}
           />
-          <div>
+          <div className="mt-[10px]">
             <Expiry />
           </div>
         </div>
 
-        <div className="bg-white rounded-[12px] p-[5px] cursor-pointer flex flex-row items-center gap-x-[10px] absolute right-5 top-5 z-50">
-          <div className="">
-            <Live />
-          </div>
-          <div className="">
-            <Deleteall />
-          </div>
+        <div className="absolute right-5 top-5 z-50">
+          <Live/>
         </div>
         <ReactFlow
           onNodesChange={onNodesChange}

@@ -10,6 +10,8 @@ import { middleware } from "supertokens-node/framework/express";
 import { errorHandler } from "supertokens-node/framework/express";
 import { verifySession } from "supertokens-node/recipe/session/framework/express";
 
+//amqlib
+import amqp from "amqplib";
 
 
 const app=express()
@@ -28,23 +30,72 @@ app.use(middleware());
 app.use(express.json())
 
 
+const connection = await amqp.connect(process.env.RABBIT_URL);
+const channel = await connection.createChannel();
 
+//cosume message from cronjob-main-queue
+async function consumeExpireusers() {
+    return new Promise((resolve,reject)=>{
+        try{
+            let retryCounter=0
+            channel.consume("cronjob-main-queue",function(msg){
+                if(msg.content){
+                    retryCounter=msg.properties.headers["x-retry-count"]
+
+                    if(retryCounter>=3){
+                        channel.reject(msg,false)
+                    }
+                    else{
+                        // console.log("[x] %s", msg.content.toString());
+                            
+                        try{
+                            //perform db operations
+                            
+                            channel.ack(msg)
+                            resolve(msg.content.toString())
+                                
+                        }
+                        catch(error){
+                            retryCounter++
+                                
+                            const headers={
+                                headers:{
+                                    "x-retry-count":retryCounter
+                                }
+                            }
+                            channel.publish("cronjob-retry-exchange","cronjob-retry-queue",Buffer.from(msg.content.toString()),headers)
+                            channel.ack(msg)
+                        }
+                    }
+                }
+                    
+            });
+        } 
+        catch(error){
+            reject(error)
+        }
+    })
+}
+
+
+//throw message using sse
 app.get('/sse',verifySession(),async(req,res)=>{
     const userId=req.session.getUserId()
     const session=await createSession(req,res)
-    console.log(userId)
+    const expiredUserData=await consumeExpireusers()
+
+    console.log(expiredUserData)
 
     //get userid and expiry from message broker {userId:qgdgqd-xccxbbn-asbssj,date:983284493274}
     if(userId=='7759a921-b183-4148-a413-0126ccc7a899'){
         //const datafromRMQ=data.date
         //{date:734374}
-        session.push({date:98972347923},"planExpiry")
+        session.push({userId:userId,expiryDate:98972347923,planStatus:'expired'},"planExpiry")
     }
     else{
         
     }
 })
-
 
 
 

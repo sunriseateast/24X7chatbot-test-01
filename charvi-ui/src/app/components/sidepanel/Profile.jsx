@@ -13,7 +13,7 @@ import Meta from "@/app/svg/Meta";
 export default function Profile() {
   const profileUrl = `https://pps.whatsapp.net/v/t61.24694-24/480614829_1268541134246218_1778835047991490715_n.jpg?ccb=11-4&oh=01_Q5Aa2gFxp6JMOssN7zpjbIzmODLreK5GH9OcqF0DCOcVpHV8Xg&oe=68CCF87E&_nc_sid=5e03e0&_nc_cat=101`;
   const phoneNumber = `9284362969`;
-  const [logedIn, setLogedIn] = useState(false);
+  const [logedIn, setLogedIn] = useState(true);
 
   return (
     <div>

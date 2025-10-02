@@ -31,6 +31,7 @@ export const updateUserinfo=asyncHandler( async(req,res,next)=>{
                 name:metadata.name,
                 email:metadata.email,
                 emailVerified:metadata.email_verified,
+                planStatus:'free',
                 duration:duration,
                 activeon:activeon,
                 expiry:expiry
@@ -49,25 +50,31 @@ export const getExpiry=asyncHandler(async(req,res,next)=>{
     const userId=session.getUserId()
 
     if(!userId){
-        throw createError(401,"expiry status error")
+        throw createError(401,"user not found")
     }
     else{
         try{
             const result=await db
-            .select({expiry:usersinfoTable.expiry})
+            .select({
+                expiry:usersinfoTable.expiry,
+                planStatus:usersinfoTable.planStatus
+            })
             .from(usersinfoTable)
             .where(eq(usersinfoTable.userId,userId))
+
             const currentExpiry=result[0]?.expiry || false
+            const currentPlanstatus=result[0]?.planStatus || false
 
             if(currentExpiry===false){
                 throw createError(400,"Invalid user")
             }
             else{
-                return res.status(200).json({success:true,message:currentExpiry})
+                return res.status(200).json({success:true,message:{expiryDate:currentExpiry,userId:userId,planStatus:currentPlanstatus}})
             }
 
         }
         catch(error){
+            console.log(error)
             throw (503,"database not available")
         }
     }

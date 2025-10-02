@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import "../css/style.css";
 import useStore from "../hook/useStore.js";
 import {
@@ -15,14 +15,21 @@ import Arrow from "../svg/Arrow";
 import Beach from "../svg/Beach";
 import Work from "../svg/Work";
 import Toast from "../utils/Toast";
+import useExpiry from "../hook/useExpiry";
+import Deleteall from "../utils/Deleteall";
 
 export default function Live() {
+  const [isExpired,setExpired]=useState()
   const [islive, setIslive] = useState(false);
   const [templive, setTemplive] = useState(false);
   const getNodeObj = useStore((state) => state.getNodeObj);
   const errorArray = useStore((state) => state.errorArray);
   const setlive = useStore((state) => state.setlive);
   const temperror = [];
+
+  const checkExpiry=useExpiry()
+  const sse=useStore((state)=>state.sse)
+  const isPayment=useStore((state)=>state.isPayment)
 
   const validation = (error) => {
     const allnodes = getNodeObj();
@@ -76,8 +83,37 @@ export default function Live() {
     }
   };
 
+   //to get expiry from db once get mounted 
+    useEffect(()=>{
+      let ignore=false
+  
+     ;(async()=>{
+        const {expiryDate,planStatus}=await checkExpiry()
+        const currentdate=Date.now()
+  
+        //safety check beacuse of await 
+        // if comp unmount do not update state
+        if (ignore) return
+  
+        if(currentdate > expiryDate){
+          setExpired(true)
+        }
+        else{
+          setExpired(false)
+        }
+      })()
+      
+      return(()=>{
+        ignore=true
+      })
+    },[sse,isPayment])
+
   return (
-    <>
+    
+      !isExpired &&
+      (
+        <div className="bg-white rounded-[12px] p-[5px] cursor-pointer flex flex-row items-center gap-x-[10px]">
+           <div>
       <div
         onClick={() => {
           setTemplive((prev) => !prev);
@@ -220,6 +256,11 @@ export default function Live() {
           </AlertDialogContent>
         </AlertDialog>
       )}
-    </>
+    </div>
+          <div className="">
+              <Deleteall/>
+          </div>
+        </div>
+      )
   );
 }

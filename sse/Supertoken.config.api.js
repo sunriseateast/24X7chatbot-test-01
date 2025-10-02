@@ -67,6 +67,7 @@ supertokens.init({
         Session.init({
             cookieSameSite: "lax",
             cookieSecure: false,
+            exposeAccessTokenToFrontendInCookieBasedAuth: true,
         }) // initializes session features
     ]
 });
