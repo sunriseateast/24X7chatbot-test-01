@@ -29,6 +29,7 @@ await client.connect()
 async function publishMessagetomainQueue(message) {
   try {
     console.log("Connected!");  
+
     //counter
     const headers={
         headers:{
@@ -37,7 +38,7 @@ async function publishMessagetomainQueue(message) {
     }
     channel.publish("cronjob-main-exchange", "cronjob-main-queue", Buffer.from(message),headers);
     console.log("Message published!");
-    setTimeout(() => connection.close(), 500);
+    
   } catch (err) {
     console.error("Error:", err.message);
   }

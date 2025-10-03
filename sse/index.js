@@ -29,77 +29,77 @@ app.use(
 app.use(middleware());
 app.use(express.json())
 
-
+//rabbit connections
 const connection = await amqp.connect(process.env.RABBIT_URL);
 const channel = await connection.createChannel();
 
-//cosume message from cronjob-main-queue
-async function consumeExpireusers() {
-    return new Promise((resolve,reject)=>{
-        try{
-            let retryCounter=0
-            channel.consume("cronjob-main-queue",function(msg){
-                if(msg.content){
-                    retryCounter=msg.properties.headers["x-retry-count"]
-
-                    if(retryCounter>=3){
-                        channel.reject(msg,false)
-                    }
-                    else{
-                        // console.log("[x] %s", msg.content.toString());
-                            
-                        try{
-                            //perform db operations
-                            
-                            channel.ack(msg)
-                            resolve(msg.content.toString())
-                                
-                        }
-                        catch(error){
-                            retryCounter++
-                                
-                            const headers={
-                                headers:{
-                                    "x-retry-count":retryCounter
-                                }
-                            }
-                            channel.publish("cronjob-retry-exchange","cronjob-retry-queue",Buffer.from(msg.content.toString()),headers)
-                            channel.ack(msg)
-                        }
-                    }
-                }
-                    
-            });
-        } 
-        catch(error){
-            reject(error)
-        }
-    })
-}
+// store online client into sse
+const onlineClients=new Map()
 
 
-//throw message using sse
+
+
+//store current logedIn user session
 app.get('/sse',verifySession(),async(req,res)=>{
     const userId=req.session.getUserId()
+   
     const session=await createSession(req,res)
-    const expiredUserData=await consumeExpireusers()
 
-    console.log(expiredUserData)
-
-    //get userid and expiry from message broker {userId:qgdgqd-xccxbbn-asbssj,date:983284493274}
-    if(userId=='7759a921-b183-4148-a413-0126ccc7a899'){
-        //const datafromRMQ=data.date
-        //{date:734374}
-        session.push({userId:userId,expiryDate:98972347923,planStatus:'expired'},"planExpiry")
-    }
-    else{
-        
-    }
+    onlineClients.set(userId,session)
 })
 
 
+//consume message from cronjob-main-queue
+try{
+    let retryCounter=0
+    channel.consume("cronjob-main-queue",function(msg){
+        if(msg.content){
+            retryCounter=msg.properties.headers["x-retry-count"]
 
+            if(retryCounter>=3){
+                channel.reject(msg,false)
+            }
+            else{                        
+                try {
+                    const message = JSON.parse(msg.content.toString());
 
+                    // process message (only once)
+                    const currentuserId = message.userId;
+                    const currentuserexpiryDate = message.expiryDate;
+                    const currentuserplanStatus = message.planStatus;
+
+                    const currentUserSession = onlineClients.get(currentuserId);
+
+                    if (currentUserSession) {
+                        currentUserSession.push(
+                        {
+                            userId: currentuserId,
+                            expiryDate: currentuserexpiryDate,
+                            planStatus: currentuserplanStatus,
+                        },
+                        "planExpiry"
+                        );
+                    }
+                    channel.ack(msg);
+                } 
+                catch(error){
+                    console.log(error)
+                    retryCounter++    
+                    const headers={
+                        headers:{
+                            "x-retry-count":retryCounter
+                        }
+                    }
+                    channel.publish("cronjob-retry-exchange","cronjob-retry-queue",Buffer.from(msg.content.toString()),headers)
+                    channel.ack(msg)
+                }
+            }
+        }
+    });
+} 
+catch(error){
+    console.log(error)
+}
 
 app.use(errorHandler()); //supertoken error handler
 app.listen(PORT,()=>{

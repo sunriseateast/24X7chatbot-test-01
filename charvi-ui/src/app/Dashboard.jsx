@@ -189,6 +189,8 @@ function Dashboard2() {
 
     eventSoure.addEventListener("planExpiry",({data})=>{
       const contents=JSON.parse(data)
+
+      //console.log(contents)
       setSse(contents)
     })
 
